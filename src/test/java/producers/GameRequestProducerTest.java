@@ -46,6 +46,9 @@ class GameRequestProducerTest {
         assertEquals(expectedJson, actualJson);
     }
 
+    // Test is not automatic => will always pass
+    // Check in kafka instance for the two sent requests
+    // I checked and it works (atm)
     @Test
     void testGameRequestProducer() {
         GameRequestProducer producer = new GameRequestProducer();
