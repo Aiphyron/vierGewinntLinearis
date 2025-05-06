@@ -7,6 +7,8 @@ import models.NewGameRequestModel;
 import models.PlayerModel;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameRequestProducerTest {
@@ -42,6 +44,25 @@ class GameRequestProducerTest {
             System.err.println("Error serializing request: " + e.getMessage());
         }
         assertEquals(expectedJson, actualJson);
+    }
+
+    @Test
+    void testGameRequestProducer() {
+        GameRequestProducer producer = new GameRequestProducer();
+        MoveRequestModel moveRequest = new MoveRequestModel("game123", "player1", 5);
+        NewGameRequestModel newGameRequest = new NewGameRequestModel("game123", new ClientModel("client1"), new PlayerModel("player1"), new ClientModel("client2"), new PlayerModel("player2"));
+
+        // Test sending a move request
+        producer.sentRequest(moveRequest);
+
+        // Test sending a new game request
+        producer.sentRequest(newGameRequest);
+
+        try {
+            TimeUnit.MILLISECONDS.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

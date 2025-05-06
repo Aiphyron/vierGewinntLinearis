@@ -16,25 +16,30 @@ public class GameRequestProducer {
     private static final String TOPIC_NAME = "game-requests";
     private static final String CLIENT_ID = "Team 1xAm3xMa";
 
-    private final KafkaProducer<String, byte[]> producer = createProducer();
+    private final KafkaProducer<String, String> producer = createProducer();
 
 
-    private KafkaProducer<String, byte[]> createProducer() {
+    private KafkaProducer<String, String> createProducer() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
         props.put(ProducerConfig.CLIENT_ID_CONFIG, CLIENT_ID);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         return new KafkaProducer<>(props);
     }
 
+    /**
+     * Sends a request to the Kafka topic.
+     * IMPORTANT: If the application is closed immediately after calling this method, the request will not be sent.
+     * @param request The request to send.
+     */
     public void sentRequest(RequestModel request) {
         ObjectMapper mapper = new ObjectMapper();
-        byte[] mappedRequest = null;
+        String mappedRequest = null;
 
         try {
-            mappedRequest = mapper.writeValueAsBytes(request);
-            System.out.println("Serialized request: " + new String(mappedRequest));
+            mappedRequest = mapper.writeValueAsString(request);
+            System.out.println("Serialized request: " + mappedRequest);
         } catch (Exception e) {
             System.err.println("Error serializing request: " + e.getMessage());
         }
