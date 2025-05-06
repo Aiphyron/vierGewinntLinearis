@@ -9,4 +9,20 @@ public class MoveRequestModel extends RequestModel {
         this.player = player;
         this.column = column;
     }
+
+    public String getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(String player) {
+        this.player = player;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
+    }
 }
