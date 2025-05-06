@@ -1,13 +1,12 @@
 package producers;
 
 
-import com.fasterxml.jackson.databind.ser.std.JsonValueSerializer;
-import models.MoveRequestModel;
-import models.NewGameRequestModel;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import models.RequestModel;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.DoubleSerializer;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;
@@ -17,20 +16,30 @@ public class GameRequestProducer {
     private static final String TOPIC_NAME = "game-requests";
     private static final String CLIENT_ID = "Team 1xAm3xMa";
 
-    private final KafkaProducer<String, Double> producer = createProducer();
+    private final KafkaProducer<String, byte[]> producer = createProducer();
 
 
-    private KafkaProducer<String, Double> createProducer() {
+    private KafkaProducer<String, byte[]> createProducer() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
         props.put(ProducerConfig.CLIENT_ID_CONFIG, CLIENT_ID);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonValueSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
         return new KafkaProducer<>(props);
     }
 
-    public void sentMoveRequest(MoveRequestModel request) {
-        producer.send(new ProducerRecord<>(TOPIC_NAME, 1.0),
+    public void sentRequest(RequestModel request) {
+        ObjectMapper mapper = new ObjectMapper();
+        byte[] mappedRequest = null;
+
+        try {
+            mappedRequest = mapper.writeValueAsBytes(request);
+            System.out.println("Serialized request: " + new String(mappedRequest));
+        } catch (Exception e) {
+            System.err.println("Error serializing request: " + e.getMessage());
+        }
+
+        producer.send(new ProducerRecord<>(TOPIC_NAME, mappedRequest),
                 (recordMetadata, e) -> {
                     if (e != null) {
                         System.err.println("Error sending message: " + e.getMessage());
@@ -38,10 +47,5 @@ public class GameRequestProducer {
                         System.out.println("Message sent successfully: " + recordMetadata.toString());
                     }
                 });
-
-    }
-
-    public void sentNewGameRequest(NewGameRequestModel request) {
-
     }
 }
