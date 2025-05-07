@@ -5,6 +5,7 @@ public class BoardDimensions {
 
     private final Dimension innerDimension;
     private final Dimension outerDimension;
+
     private final int rows, cols;
 
     private final int margin;

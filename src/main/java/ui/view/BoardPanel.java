@@ -26,21 +26,40 @@ public class BoardPanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
                 RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        this.model.recalculateBoardDimensions(getWidth(), getHeight());
+        //this.model.recalculateBoardDimensions(getWidth(), getHeight());
         drawBoard(g2d);
     }
 
     private void drawBoard(Graphics2D g2d) {
-        int cursorX = this.model.getBoardDimensions().getMargin();
-        int cursorY = this.model.getBoardDimensions().getMargin();
+        int margin = this.model.getBoardDimensions().getMargin();
+        int cursorX = margin;
+        int cursorY = margin;
 
-        g2d.setColor(Color.DARK_GRAY);
+        g2d.setColor(Color.GRAY);
         g2d.fillRect(
                 cursorX,
                 cursorY,
                 this.model.getBoardDimensions().getInnerDimension().width,
                 this.model.getBoardDimensions().getInnerDimension().height
         );
+
+        g2d.setColor(Color.WHITE);
+        int pieceMargin = this.model.getBoardDimensions().getPieceDimensions().getMargin();
+        int pieceDiameter = this.model.getBoardDimensions().getPieceDimensions().getRadius() * 2;
+        int pieceWidth = this.model.getBoardDimensions().getPieceDimensions().getDimension().width;
+        int pieceHeight = this.model.getBoardDimensions().getPieceDimensions().getDimension().height;
+        for (int col = 0; col < this.model.getBoardDimensions().getCols(); col++) {
+            for (int row = 0; row < this.model.getBoardDimensions().getRows(); row++) {
+                g2d.fillOval(
+                        cursorX + pieceMargin,
+                        cursorY + pieceMargin,
+                        pieceDiameter,
+                        pieceDiameter);
+                cursorY += pieceHeight;
+            }
+            cursorY = margin;
+            cursorX += pieceWidth;
+        }
     }
 
 }

@@ -10,8 +10,8 @@ public class PieceDimensions {
     private Dimension dimension;
 
     public PieceDimensions() {
-        this.margin = 10;
-        this.radius = 20;
+        this.margin = 5;
+        this.radius = 25;
 
         int size = 2 * radius + 2 * margin;
         this.dimension = new Dimension(size, size);
