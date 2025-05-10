@@ -15,6 +15,7 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:4.0.0")
     implementation("com.fasterxml.jackson.core:jackson-core:2.19.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
+    implementation("org.slf4j:slf4j-nop:2.0.12")
 }
 
 tasks.test {
