@@ -16,6 +16,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.19.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.19.0")
     implementation("com.formdev:flatlaf:3.6")
+    implementation("org.slf4j:slf4j-nop:2.0.12")
 }
 
 tasks.test {
