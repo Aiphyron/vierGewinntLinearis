@@ -1,4 +1,7 @@
-package models;
+package models.RequestModels;
+
+import models.ClientModel;
+import models.PlayerModel;
 
 public class NewGameRequestModel extends RequestModel {
     private ClientModel client1;

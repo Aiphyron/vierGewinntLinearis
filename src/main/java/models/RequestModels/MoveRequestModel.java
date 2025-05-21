@@ -1,4 +1,4 @@
-package models;
+package models.RequestModels;
 
 public class MoveRequestModel extends RequestModel {
     private String player;
