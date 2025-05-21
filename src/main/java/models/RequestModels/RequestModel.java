@@ -1,4 +1,4 @@
-package models;
+package models.RequestModels;
 
 public abstract class RequestModel {
     private String type;

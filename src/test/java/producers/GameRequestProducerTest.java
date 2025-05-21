@@ -2,8 +2,8 @@ package producers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.ClientModel;
-import models.MoveRequestModel;
-import models.NewGameRequestModel;
+import models.RequestModels.MoveRequestModel;
+import models.RequestModels.NewGameRequestModel;
 import models.PlayerModel;
 import org.junit.jupiter.api.Test;
 
@@ -61,6 +61,7 @@ class GameRequestProducerTest {
         // Test sending a new game request
         producer.sentRequest(newGameRequest);
 
+        // delay because kafka needs time to process the requests
         try {
             TimeUnit.MILLISECONDS.sleep(1000);
         } catch (InterruptedException e) {
