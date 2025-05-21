@@ -35,7 +35,7 @@ public class BoardPanel extends JPanel {
         int cursorX = margin;
         int cursorY = margin;
 
-        g2d.setColor(Color.GRAY);
+        g2d.setColor(Color.BLUE);
         g2d.fillRect(
                 cursorX,
                 cursorY,
