@@ -184,8 +184,6 @@ public class GameEventConsumerTest {
               ]
             }
         """;
-        assertThrows(Exception.class, () -> {
-            objectMapper.readValue(invalidJson, EventModel.class);
-        });
+        assertThrows(Exception.class, () -> objectMapper.readValue(invalidJson, EventModel.class));
     }
 }
