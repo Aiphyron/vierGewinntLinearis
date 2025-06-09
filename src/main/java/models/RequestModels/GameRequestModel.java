@@ -1,10 +1,10 @@
 package models.RequestModels;
 
-public abstract class RequestModel {
+public abstract class GameRequestModel {
     private String type;
     private String gameId;
 
-    public RequestModel(String type, String gameId) {
+    public GameRequestModel(String type, String gameId) {
         this.type = type;
         this.gameId = gameId;
     }

@@ -1,5 +1,7 @@
 package consumers;
 
+import models.GameEventModels.SyncGameModel;
+import models.RequestModels.SyncGameTypes;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -8,6 +10,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.GameEventModels.EventModel;
 
+import javax.swing.*;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
@@ -21,7 +24,13 @@ public class GameEventConsumer {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private String gameId;
 
-    public GameEventConsumer() {
+    private GameEventListener listener;
+
+    private volatile boolean running = true;
+
+    public GameEventConsumer(String gameId, GameEventListener listener) {
+        this.gameId = gameId;
+        this.listener = listener;
         consumer.subscribe(Collections.singletonList(TOPIC_NAME));
     }
 
@@ -36,16 +45,16 @@ public class GameEventConsumer {
         return new KafkaConsumer<>(props);
     }
 
-    public void consume() {
+    public void consumeGameEvent() {
         try {
-            while(true) {
+            while(running) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
                 for (ConsumerRecord<String, String> record : records) {
                     if (records.isEmpty()) break;
                     try {
                         EventModel event = objectMapper.readValue(record.value(), EventModel.class);
-                        if (event.getGameId().equals(this.gameId)) {
-                            // TODO: handle event
+                        if (event.getGameId().equals(this.gameId) && listener != null) {
+                            SwingUtilities.invokeLater(() -> listener.onGameEvent(event));
                         }
                     } catch (Exception e) {
                         System.err.println("Error during Object Mapping " + e.getMessage());
@@ -60,7 +69,8 @@ public class GameEventConsumer {
     }
 
     public void stop() {
-        consumer.close();
+        running = false;
+        consumer.wakeup(); // Interrupt poll() call
     }
 
     public String getGameId() {

@@ -2,7 +2,8 @@ package producers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import models.RequestModels.RequestModel;
+import models.RequestModels.GameRequestModel;
+import models.RequestModels.SyncGameRequestModel;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -12,7 +13,8 @@ import java.util.Properties;
 
 public class GameRequestProducer {
     private static final String BOOTSTRAP_SERVERS = "10.50.15.52:9092";
-    private static final String TOPIC_NAME = "game-requests";
+    private static final String GAME_REQUEST_TOPIC = "game-requests";
+    private static final String SYNC_GAMES_TOPIC = "sync-games-3xMa1xAm";
     private static final String CLIENT_ID = "Team 1xAm3xMa";
 
     private final KafkaProducer<String, String> producer = createProducer();
@@ -32,7 +34,7 @@ public class GameRequestProducer {
      * IMPORTANT: If the application is closed immediately after calling this method, the request will not be sent.
      * @param request The request to send.
      */
-    public void sentRequest(RequestModel request) {
+    public void sendGameRequest(GameRequestModel request) {
         ObjectMapper mapper = new ObjectMapper();
         String mappedRequest = null;
 
@@ -43,7 +45,7 @@ public class GameRequestProducer {
             System.err.println("Error serializing request: " + e.getMessage());
         }
 
-        producer.send(new ProducerRecord<>(TOPIC_NAME, mappedRequest),
+        producer.send(new ProducerRecord<>(GAME_REQUEST_TOPIC, mappedRequest),
                 (recordMetadata, e) -> {
                     if (e != null) {
                         System.err.println("Error sending message: " + e.getMessage());
@@ -51,5 +53,31 @@ public class GameRequestProducer {
                         System.out.println("Message sent successfully: " + recordMetadata.toString());
                     }
                 });
+    }
+
+    public void sendSyncGameRequest(SyncGameRequestModel request) {
+        ObjectMapper mapper = new ObjectMapper();
+        String mappedRequest = null;
+
+        try {
+            mappedRequest = mapper.writeValueAsString(request);
+            System.out.println("Serialized sync request: " + mappedRequest);
+        } catch (Exception e) {
+            System.err.println("Error serializing sync request: " + e.getMessage());
+        }
+
+        producer.send(new ProducerRecord<>(SYNC_GAMES_TOPIC, mappedRequest),
+                (recordMetadata, e) -> {
+                    if (e != null) {
+                        System.err.println("Error sending sync message: " + e.getMessage());
+                    } else {
+                        System.out.println("Sync message sent successfully: " + recordMetadata.toString());
+                    }
+                });
+    }
+
+    public void stop() {
+        producer.close();
+        System.out.println("Producer closed successfully.");
     }
 }
