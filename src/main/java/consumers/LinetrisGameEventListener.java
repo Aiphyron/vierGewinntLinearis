@@ -33,16 +33,49 @@ public class LinetrisGameEventListener implements GameEventListener {
 
     @Override
     public void onGameEvent(EventModel event) {
-        // Handle game event
         List<Action> actions = event.getActions();
+
+        // Handle errors
+        if (event.getState() == GameState.ERROR) {
+            String errorMessage = event.getMessage();
+
+            // Get player to display the error message for
+            PlayerEnum currentPlayer = null;
+            for (Action action: actions) {
+                switch (action) {
+                    case NewGameAction newGameAction -> {
+                        currentPlayer = null;
+                    }
+                    case DeleteBottomRowAction deleteBottomRowAction -> {
+                        // Do nothing because no player is set here
+                    }
+                    case MoveAction moveAction -> {
+                        currentPlayer = PlayerEnum.fromString(moveAction.getPlayer());
+                    }
+                    default -> System.out.println("Unhandled action type: " + action.getClass().getSimpleName());
+                }
+            }
+
+            // Only display error message to the current player or if currentPlayer is null display it to both
+            if (currentPlayer == model.getPlayerIdentity() || currentPlayer == null) {
+                if (errorMessage != null && !errorMessage.isEmpty()) {
+                    JOptionPane.showMessageDialog(boardPanel, "Error: " + errorMessage);
+                } else {
+                    JOptionPane.showMessageDialog(boardPanel, "An unknown error occurred.");
+                }
+            }
+
+            return;
+        }
+
+        // Handle game actions
         if (actions != null && !actions.isEmpty() && event.getState() == GameState.OK) {
             for (Action action : actions) {
                 switch (action) {
                     case MoveAction moveAction -> {
                         int col = moveAction.getColumn();
                         PlayerEnum player = PlayerEnum.fromString(moveAction.getPlayer());
-                        model.setCurrentPlayer(player);
-                        model.setBoardPiece(col);
+                        boardPanel.setBoardPiece(player, col);
                     }
                     case DeleteBottomRowAction deleteBottomRowAction -> {
                         int row = deleteBottomRowAction.getRow();
@@ -60,19 +93,26 @@ public class LinetrisGameEventListener implements GameEventListener {
                     // Add cases for other action types if needed
                     default -> System.out.println("Unhandled action type: " + action.getClass().getSimpleName());
                 }
+
+                // add a little delay between actions to allow the UI to update
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            boardPanel.repaint();
         }
     }
 
     @Override
     public void onGameSync(SyncGameModel event, SyncGameTypes wantedType) {
-        GameRequestProducer producer = new GameRequestProducer();
         // Handle game sync event
+        GameRequestProducer producer = new GameRequestProducer();
         SyncGameTypes syncType = event.getType();
         if (syncType == SyncGameTypes.SEARCH_GAME && wantedType == SyncGameTypes.SEARCH_GAME) {
             if (event.getGameId().equals(model.getGameId())) {
                 // If it reads the same game ID here, ignore to prevent client matching with itself
+                // should technically never happen, but better safe than sorry
                 return;
             }
             // Set player identity, rest is set when game master approvement is received
@@ -83,6 +123,7 @@ public class LinetrisGameEventListener implements GameEventListener {
             SyncGameRequestModel syncRequest = new SyncGameRequestModel(
                     Instant.now().toEpochMilli(), event.getGameId(), SyncGameTypes.PLAYER_JOINED, model.getClientName(), model.getPlayerName(),model.getBoardDimensions().getRows(),model.getBoardDimensions().getCols());
             producer.sendSyncGameRequest(syncRequest);
+
             if (latch != null) {
                 // Free up the latch to signal that the game is ready
                 latch.countDown();
@@ -93,13 +134,10 @@ public class LinetrisGameEventListener implements GameEventListener {
                     && event.getCols() == model.getBoardDimensions().getCols()) {
                 // Set up player identity, rest is set when game master approvement is received
                 model.setPlayerIdentity(PlayerEnum.ONE);
-//                model.setPlayer1Name(model.getPlayerName());
-//                model.setClient1Name(model.getClientName());
-//                model.setPlayer2Name(event.getPlayerName());
-//                model.setClient2Name(event.getClientName());
                 // Send start game request
                 NewGameGameRequestModel newGameRequest = new NewGameGameRequestModel(event.getGameId(), new ClientModel(model.getClientName()), new PlayerModel(model.getPlayerName()), new ClientModel(event.getClientName()), new PlayerModel(event.getPlayerName()));
                 producer.sendGameRequest(newGameRequest);
+
                 // Free up the latch to signal that the game is ready
                 if (latch != null) {
                     latch.countDown();

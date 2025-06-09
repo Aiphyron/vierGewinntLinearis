@@ -4,26 +4,60 @@ import models.ActionModels.NewGameAction;
 import ui.model.dimensions.BoardDimensions;
 
 public class GameModel {
-
+    /**
+     * The name of the player who is currently playing the game.
+     */
     private String playerName;
+    /**
+     * The name of the client that is currently playing the game.
+     */
     private String clientName;
 
-    // PlayerEnum [Row][Column]
+
+    /**
+     * The game board represented as a 2D array of PlayerEnum.
+     * Each cell can be null (empty), PlayerEnum.ONE (player 1's piece), or PlayerEnum.TWO (player 2's piece).
+     * Allgemein: PlayerEnum[Row][Column]
+     */
     private PlayerEnum[][] board;
 
     // Player names and client names
+    /**
+     * The name of player 1.
+     */
     private String player1Name;
+    /**
+     * The name of client 1.
+     */
     private String client1Name;
+    /**
+     * The name of player 2.
+     */
     private String player2Name;
+    /**
+     * The name of client 2.
+     */
     private String client2Name;
 
+    /**
+     * The unique identifier for the game.
+     */
     private String gameId;
 
     // Save which player this is
+    /**
+     * The identity of the player (either PlayerEnum.ONE or PlayerEnum.TWO).
+     */
     private PlayerEnum playerIdentity = PlayerEnum.ONE;
+    /**
+     * The current player who is making a move (either PlayerEnum.ONE or PlayerEnum.TWO).
+     * Used to determine who to display an error or which color to draw.
+     */
     private PlayerEnum currentPlayer = PlayerEnum.ONE;
 
-    // Dimensions of the board
+    /**
+     * The dimensions of the game board, including inner and outer dimensions, piece size, and margins.
+     */
     private final BoardDimensions boardDimensions;
 
     public GameModel(String playerName, String clientName) {

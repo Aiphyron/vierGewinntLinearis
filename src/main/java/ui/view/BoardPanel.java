@@ -147,30 +147,27 @@ public class BoardPanel extends JPanel {
         if (waitingForGameStart || drawInitialBoardBool) {
             return; // Ignore clicks if waiting for game start or drawing initial board
         }
-        int margin = this.model.getBoardDimensions().getMargin();
-        int pieceWidth = this.model.getBoardDimensions().getPieceDimensions().getDimension().width;
-        int pieceHeight = this.model.getBoardDimensions().getPieceDimensions().getDimension().height;
+        int margin = model.getBoardDimensions().getMargin();
+        int pieceWidth = model.getBoardDimensions().getPieceDimensions().getDimension().width;
+        int pieceHeight = model.getBoardDimensions().getPieceDimensions().getDimension().height;
 
         int col = (x - margin) / pieceWidth;
         int row = (y - margin) / pieceHeight;
 
-        if (col >= 0 && col < this.model.getBoardDimensions().getCols() &&
-                row >= 0 && row < this.model.getBoardDimensions().getRows()) {
+        if (col >= 0 && col < model.getBoardDimensions().getCols() &&
+                row >= 0 && row < model.getBoardDimensions().getRows()) {
             // Do something with the clicked cell, e.g.:
             System.out.println("Clicked cell: (" + col + ", " + row + ")");
 
             sendMoveRequest(col);
-
-            // Repaint the board to reflect the change
-            repaint();
         }
     }
 
     public void clearRow(int row) {
         row = row -1; // Adjust row to match game masters logic (Start from 1 instead of start from 0)
-        PlayerEnum[][] board = this.model.getBoard();
+        PlayerEnum[][] board = model.getBoard();
         // Set bottom row to null
-        for (int col = 0; col < this.model.getBoardDimensions().getCols(); col++) {
+        for (int col = 0; col < model.getBoardDimensions().getCols(); col++) {
             board[row][col] = null;
         }
 
@@ -182,7 +179,7 @@ public class BoardPanel extends JPanel {
             }
         }
 
-        this.model.setBoard(board);
+        model.setBoard(board);
         repaint();
     }
 
@@ -210,8 +207,8 @@ public class BoardPanel extends JPanel {
             startEventConsumer(gameId);
         }
 
-        waitingForGameStart = false;
-        drawInitialBoardBool = false;
+        setWaitingForGameStart(false);
+        setDrawInitialBoardBool(false);
 
         JOptionPane.showMessageDialog(this, "Initialized new game!\n" + model);
         repaint();
@@ -239,6 +236,38 @@ public class BoardPanel extends JPanel {
      */
     public void cleanUpGame() {
         stopEventConsumer();
+        setDrawInitialBoardBool(true);
+        repaint();
+    }
+
+    public void setDrawInitialBoardBool(boolean drawInitialBoardBool) {
+        this.drawInitialBoardBool = drawInitialBoardBool;
+        if (drawInitialBoardBool) {
+            setWaitingForGameStart(false);
+        }
+    }
+
+    public void setWaitingForGameStart(boolean waitingForGameStart) {
+        this.waitingForGameStart = waitingForGameStart;
+        if (waitingForGameStart) {
+            setDrawInitialBoardBool(false);
+        }
+    }
+
+    public void setWaitingForGameStartAndRepaint(boolean waitingForGameStart) {
+        setWaitingForGameStart(waitingForGameStart);
+        repaint();
+    }
+
+    public void setBoardPiece(PlayerEnum player, int col) {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
+        if (col < 1 || col > this.model.getBoardDimensions().getCols()) {
+            throw new IndexOutOfBoundsException("Column out of bounds");
+        }
+        model.setCurrentPlayer(player);
+        model.setBoardPiece(col);
         repaint();
     }
 }

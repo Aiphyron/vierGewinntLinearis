@@ -3,6 +3,7 @@ package ui.view;
 import com.formdev.flatlaf.FlatLightLaf;
 import ui.model.GameModel;
 import ui.view.menu.GameMenu;
+import ui.view.menu.OptionMenu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,26 +37,26 @@ public class ConnectFourFrame {
             System.exit(0);
         }
 
-        this.model = new GameModel(playerName, clientName);
+        model = new GameModel(playerName, clientName);
 
-        this.frame = new JFrame("Vier Gewinnt: Linetris - Client:" + clientName + " - Player: " + playerName);
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame = new JFrame("Vier Gewinnt: Linetris - Client:" + clientName + " - Player: " + playerName);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.boardPanel = new BoardPanel(this, this.model);
-        this.frame.add(this.boardPanel, BorderLayout.CENTER);
+        boardPanel = new BoardPanel(this, this.model);
+        frame.add(this.boardPanel, BorderLayout.CENTER);
 
-        this.scorePanel = new ScorePanel();
+        scorePanel = new ScorePanel();
 
         JMenuBar jMenuBar = new JMenuBar();
         JMenu menu = new GameMenu(this.model, this.boardPanel);
-        JMenu options = new JMenu("Optionen");
+        JMenu options = new OptionMenu();
         jMenuBar.add(menu);
         jMenuBar.add(options);
-        this.frame.setJMenuBar(jMenuBar);
+        frame.setJMenuBar(jMenuBar);
 
-        this.frame.pack();
-        this.frame.setLayout(null);
-        this.frame.setVisible(true);
+        frame.pack();
+        frame.setLayout(null);
+        frame.setVisible(true);
 
     }
 

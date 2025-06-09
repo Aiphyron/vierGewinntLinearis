@@ -1,7 +1,5 @@
 package consumers;
 
-import models.GameEventModels.SyncGameModel;
-import models.RequestModels.SyncGameTypes;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -12,6 +10,7 @@ import models.GameEventModels.EventModel;
 
 import javax.swing.*;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.UUID;
@@ -53,7 +52,10 @@ public class GameEventConsumer {
                     if (records.isEmpty()) break;
                     try {
                         EventModel event = objectMapper.readValue(record.value(), EventModel.class);
-                        if (event.getGameId().equals(this.gameId) && listener != null) {
+
+                        if (event.getGameId().equals(this.gameId) && listener != null
+                                // Check if the event is within the last 24 hours
+                            && Instant.ofEpochMilli(event.getTimeStamp()).isAfter(Instant.now().minusSeconds(60*60*24))) {
                             SwingUtilities.invokeLater(() -> listener.onGameEvent(event));
                         }
                     } catch (Exception e) {

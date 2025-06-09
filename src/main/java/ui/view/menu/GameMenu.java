@@ -31,24 +31,24 @@ public class GameMenu extends JMenu implements ActionListener {
         this.boardPanel = boardPanel;
         this.setText("Spiel");
 
-        this.startGameItem = new JMenuItem("Neues Spiel starten");
-        this.startGameItem.getAccessibleContext().setAccessibleDescription(
+        startGameItem = new JMenuItem("Neues Spiel starten");
+        startGameItem.getAccessibleContext().setAccessibleDescription(
                 "Startet ein neues Spiel als Spieler A"
         );
-        this.startGameItem.setAccelerator(KeyStroke.getKeyStroke(
+        startGameItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_1, InputEvent.ALT_DOWN_MASK
         ));
-        this.startGameItem.addActionListener(this);
+        startGameItem.addActionListener(this);
         this.add(startGameItem);
 
-        this.connectGameItem = new JMenuItem("Mit Spiel verbinden");
-        this.connectGameItem.getAccessibleContext().setAccessibleDescription(
+        connectGameItem = new JMenuItem("Mit Spiel verbinden");
+        connectGameItem.getAccessibleContext().setAccessibleDescription(
                 "Tritt einem existierenden Spiel als Spieler B bei. Dafür wird eine UUID benötigt."
         );
-        this.connectGameItem.setAccelerator(KeyStroke.getKeyStroke(
+        connectGameItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_2, InputEvent.ALT_DOWN_MASK
         ));
-        this.connectGameItem.addActionListener(this);
+        connectGameItem.addActionListener(this);
         this.add(connectGameItem);
     }
 
@@ -91,6 +91,7 @@ public class GameMenu extends JMenu implements ActionListener {
 // Show the dialog (this blocks the UI until dispose is called)
             waitingDialog.setVisible(true);
             boardPanel.startEventConsumer(gameModel.getGameId());
+            boardPanel.setWaitingForGameStartAndRepaint(true);
         } else if (source == this.connectGameItem) {
             CountDownLatch latch = new CountDownLatch(1);
             GameSyncConsumer consumer = new GameSyncConsumer(new LinetrisGameEventListener(gameModel, boardPanel, latch), gameModel);
@@ -112,18 +113,19 @@ public class GameMenu extends JMenu implements ActionListener {
             }).start();
 
             waitingDialog.setVisible(true);
-
             boardPanel.startEventConsumer(gameModel.getGameId());
+            boardPanel.setWaitingForGameStartAndRepaint(true);
         }
 
     }
 
     private JDialog generateWaitWindow(String displayText) {
-        JDialog waitingDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(boardPanel), "Waiting", true);
+        JDialog waitingDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(boardPanel), "Waiting", false);
         waitingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         waitingDialog.add(new JLabel(displayText), java.awt.BorderLayout.CENTER);
         waitingDialog.setSize(300, 100);
         waitingDialog.setLocationRelativeTo(boardPanel);
+
         return waitingDialog;
     }
 }
