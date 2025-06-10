@@ -1,3 +1,0 @@
-- Refactoring/Cleanup
-- Weitere Fehlermeldungen
-- Models mit Jackson überarbeiten

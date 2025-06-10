@@ -1,10 +1,19 @@
 package models.RequestModels;
 
-public abstract class GameRequestModel {
-    private String type;
-    private String gameId;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public GameRequestModel(String type, String gameId) {
+/**
+ * Abstract class representing a game request model.
+ */
+public abstract class GameRequestModel {
+    private final String type;
+    private final String gameId;
+
+    @JsonCreator
+    public GameRequestModel(
+            @JsonProperty("type") String type,
+            @JsonProperty("gameId") String gameId) {
         this.type = type;
         this.gameId = gameId;
     }
@@ -14,11 +23,5 @@ public abstract class GameRequestModel {
     }
     public String getGameId() {
         return gameId;
-    }
-    public void setType(String type) {
-        this.type = type;
-    }
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
     }
 }

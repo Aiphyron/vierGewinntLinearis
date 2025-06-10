@@ -8,13 +8,16 @@ import ui.view.menu.OptionMenu;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * ConnectFourFrame is the main frame for the Connect Four game application.
+ * It initializes the UI components, including the board and score panels,
+ * and sets up the menu bar with game options.
+ */
 public class ConnectFourFrame {
 
     private final JFrame frame;
 
     private final BoardPanel boardPanel;
-
-    private final ScorePanel scorePanel;
 
     private final GameModel model;
 
@@ -39,13 +42,11 @@ public class ConnectFourFrame {
 
         model = new GameModel(playerName, clientName);
 
-        frame = new JFrame("Vier Gewinnt: Linetris - Client:" + clientName + " - Player: " + playerName);
+        frame = new JFrame("Vier Gewinnt: Linetris - Player: " + playerName + " - Client: " + clientName);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         boardPanel = new BoardPanel(this, this.model);
         frame.add(this.boardPanel, BorderLayout.CENTER);
-
-        scorePanel = new ScorePanel();
 
         JMenuBar jMenuBar = new JMenuBar();
         JMenu menu = new GameMenu(this.model, this.boardPanel);
@@ -57,7 +58,6 @@ public class ConnectFourFrame {
         frame.pack();
         frame.setLayout(null);
         frame.setVisible(true);
-
     }
 
 }

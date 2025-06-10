@@ -2,7 +2,6 @@ package models.ActionModels;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import models.ClientModel;
 import models.PlayerModel;
 

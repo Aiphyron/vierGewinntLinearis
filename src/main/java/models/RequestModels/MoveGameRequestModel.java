@@ -1,10 +1,20 @@
 package models.RequestModels;
 
-public class MoveGameRequestModel extends GameRequestModel {
-    private String player;
-    private int column;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public MoveGameRequestModel(String gameId, String player, int column) {
+/**
+ * Request model for a move action in a game.
+ */
+public class MoveGameRequestModel extends GameRequestModel {
+    private final String player;
+    private final int column;
+
+    @JsonCreator
+    public MoveGameRequestModel(
+            @JsonProperty("gameId") String gameId,
+            @JsonProperty("player") String player,
+            @JsonProperty("column") int column) {
         super("move", gameId);
         this.player = player;
         this.column = column;
@@ -14,15 +24,7 @@ public class MoveGameRequestModel extends GameRequestModel {
         return player;
     }
 
-    public void setPlayer(String player) {
-        this.player = player;
-    }
-
     public int getColumn() {
         return column;
-    }
-
-    public void setColumn(int column) {
-        this.column = column;
     }
 }

@@ -3,6 +3,10 @@ package ui.model;
 import models.ActionModels.NewGameAction;
 import ui.model.dimensions.BoardDimensions;
 
+/**
+ * Represents the game model for the game.
+ * It contains the game board, player information, and methods to manipulate the game state.
+ */
 public class GameModel {
     /**
      * The name of the player who is currently playing the game.

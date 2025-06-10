@@ -17,6 +17,10 @@ import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * GameMenu is a JMenu that provides options to start a new game or connect to an existing game.
+ * It handles the actions for starting a new game and connecting to an existing game.
+ */
 public class GameMenu extends JMenu implements ActionListener {
 
     public JMenuItem startGameItem;
@@ -26,6 +30,12 @@ public class GameMenu extends JMenu implements ActionListener {
     private BoardPanel boardPanel;
 
 
+    /**
+     * Constructs a GameMenu with the specified GameModel and BoardPanel.
+     *
+     * @param model      the GameModel that holds the game state
+     * @param boardPanel the BoardPanel where the game will be displayed
+     */
     public GameMenu(GameModel model, BoardPanel boardPanel) {
         gameModel = model;
         this.boardPanel = boardPanel;
@@ -78,7 +88,7 @@ public class GameMenu extends JMenu implements ActionListener {
                 consumer.consumeGameSync(SyncGameTypes.PLAYER_JOINED);
             }).start();
 
-// Wait for the latch in a background thread, then close the dialog
+            // Wait for the latch in a background thread, then close the dialog
             new Thread(() -> {
                 try {
                     latch.await();
@@ -86,12 +96,13 @@ public class GameMenu extends JMenu implements ActionListener {
                     throw new RuntimeException(ex);
                 }
                 waitingDialog.dispose();
+                boardPanel.startEventConsumer(gameModel.getGameId());
+                boardPanel.setWaitingForGameStartAndRepaint(true);
             }).start();
 
-// Show the dialog (this blocks the UI until dispose is called)
+            // Show the dialog (this blocks the UI until dispose is called)
             waitingDialog.setVisible(true);
-            boardPanel.startEventConsumer(gameModel.getGameId());
-            boardPanel.setWaitingForGameStartAndRepaint(true);
+
         } else if (source == this.connectGameItem) {
             CountDownLatch latch = new CountDownLatch(1);
             GameSyncConsumer consumer = new GameSyncConsumer(new LinetrisGameEventListener(gameModel, boardPanel, latch), gameModel);
@@ -110,15 +121,22 @@ public class GameMenu extends JMenu implements ActionListener {
                     throw new RuntimeException(ex);
                 }
                 waitingDialog.dispose();
+                System.out.println("Started consumer with game ID: " + gameModel.getGameId());
+                boardPanel.startEventConsumer(gameModel.getGameId());
+                boardPanel.setWaitingForGameStartAndRepaint(true);
             }).start();
 
             waitingDialog.setVisible(true);
-            boardPanel.startEventConsumer(gameModel.getGameId());
-            boardPanel.setWaitingForGameStartAndRepaint(true);
         }
 
     }
 
+    /**
+     * Generates a waiting dialog with the specified display text.
+     *
+     * @param displayText the text to display in the waiting dialog
+     * @return the JDialog waiting dialog
+     */
     private JDialog generateWaitWindow(String displayText) {
         JDialog waitingDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(boardPanel), "Waiting", false);
         waitingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);

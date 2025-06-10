@@ -1,20 +1,31 @@
 package models.RequestModels;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * Represents a request to synchronize a game state.
+ * This model is used to send synchronization requests between clients and the server.
+ */
 public class SyncGameRequestModel {
-    private long timestamp;
-    private String gameId;
-    private SyncGameTypes type;
-    private String clientName;
-    private String playerName;
+    private final long timestamp;
+    private final String gameId;
+    private final SyncGameTypes type;
+    private final String clientName;
+    private final String playerName;
     // Only for future use, currently nothing implemented and every request sends 8x8
-    private int rows;
-    private int cols;
+    private final int rows;
+    private final int cols;
 
-    public SyncGameRequestModel() {
-        // Default constructor for deserialization
-    }
-
-    public SyncGameRequestModel(long timestamp, String gameId, SyncGameTypes type, String clientName, String playerName, int rows, int cols) {
+    @JsonCreator
+    public SyncGameRequestModel(
+            @JsonProperty("timestamp") long timestamp,
+            @JsonProperty("gameId") String gameId,
+            @JsonProperty("type") SyncGameTypes type,
+            @JsonProperty("clientName") String clientName,
+            @JsonProperty("playerName") String playerName,
+            @JsonProperty("rows") int rows,
+            @JsonProperty("cols") int cols) {
         this.timestamp = timestamp;
         this.gameId = gameId;
         this.type = type;
@@ -27,47 +38,22 @@ public class SyncGameRequestModel {
     public long getTimestamp() {
         return timestamp;
     }
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getGameId() {
         return gameId;
     }
     public SyncGameTypes getType() {
         return type;
     }
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
-    }
-    public void setType(SyncGameTypes type) {
-        this.type = type;
-    }
     public String getClientName() {
         return clientName;
     }
-
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
-
     public String getPlayerName() {
         return playerName;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
     }
     public int getRows() {
         return rows;
     }
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
     public int getCols() {
         return cols;
-    }
-    public void setCols(int cols) {
-        this.cols = cols;
     }
 }

@@ -64,7 +64,6 @@ public class LinetrisGameEventListener implements GameEventListener {
                     JOptionPane.showMessageDialog(boardPanel, "An unknown error occurred.");
                 }
             }
-
             return;
         }
 
@@ -83,7 +82,14 @@ public class LinetrisGameEventListener implements GameEventListener {
                     }
                     case WinAction winAction -> {
                         PlayerEnum winner = PlayerEnum.fromString(winAction.getPlayer());
-                        JOptionPane.showMessageDialog(boardPanel, "Player " + winner + " wins!");
+                        // Display name of winner
+                        String winnerMessage = "";
+                        if (winner == model.getPlayerIdentity()) {
+                            winnerMessage = "You win!";
+                        } else {
+                            winnerMessage = "You lose!";
+                        }
+                        JOptionPane.showMessageDialog(boardPanel, winnerMessage);
                         boardPanel.cleanUpGame();
                     }
                     case NewGameAction newGameAction -> {
@@ -93,13 +99,6 @@ public class LinetrisGameEventListener implements GameEventListener {
                     // Add cases for other action types if needed
                     default -> System.out.println("Unhandled action type: " + action.getClass().getSimpleName());
                 }
-
-                // add a little delay between actions to allow the UI to update
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
             }
         }
     }
@@ -108,11 +107,17 @@ public class LinetrisGameEventListener implements GameEventListener {
     public void onGameSync(SyncGameModel event, SyncGameTypes wantedType) {
         // Handle game sync event
         GameRequestProducer producer = new GameRequestProducer();
-        SyncGameTypes syncType = event.getType();
+
+        SyncGameTypes syncType = null;
+        if (event != null) {
+            syncType = event.getType();
+        }
+
         if (syncType == SyncGameTypes.SEARCH_GAME && wantedType == SyncGameTypes.SEARCH_GAME) {
             if (event.getGameId().equals(model.getGameId())) {
                 // If it reads the same game ID here, ignore to prevent client matching with itself
                 // should technically never happen, but better safe than sorry
+                System.out.println("SAME GAME ID DETECTED, IGNORING");
                 return;
             }
             // Set player identity, rest is set when game master approvement is received
@@ -124,6 +129,7 @@ public class LinetrisGameEventListener implements GameEventListener {
                     Instant.now().toEpochMilli(), event.getGameId(), SyncGameTypes.PLAYER_JOINED, model.getClientName(), model.getPlayerName(),model.getBoardDimensions().getRows(),model.getBoardDimensions().getCols());
             producer.sendSyncGameRequest(syncRequest);
 
+            System.out.println("Game ID: " + event.getGameId() + " found, sending PLAYER_JOINED request");
             if (latch != null) {
                 // Free up the latch to signal that the game is ready
                 latch.countDown();

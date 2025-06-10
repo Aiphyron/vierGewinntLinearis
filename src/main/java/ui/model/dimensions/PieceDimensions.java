@@ -2,6 +2,10 @@ package ui.model.dimensions;
 
 import java.awt.*;
 
+/**
+ * Represents the dimensions of a piece.
+ * It includes the radius, margin, and overall dimension of the piece.
+ */
 public class PieceDimensions {
     private final int margin;
 

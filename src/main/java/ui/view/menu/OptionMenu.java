@@ -6,6 +6,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
+/**
+ * OptionMenu is a JMenu that provides options for the user to access settings.
+ * Currently, it only shows a message that settings are not implemented.
+ */
 public class OptionMenu extends JMenu implements ActionListener {
     public OptionMenu() {
         this.setText("Optionen");

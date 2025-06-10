@@ -1,6 +1,11 @@
 package ui.model.dimensions;
 import java.awt.*;
 
+/**
+ * Represents the dimensions of the game board.
+ * It includes the inner and outer dimensions, number of rows and columns,
+ * margin around the board, and piece dimensions.
+ */
 public class BoardDimensions {
 
     private final Dimension innerDimension;

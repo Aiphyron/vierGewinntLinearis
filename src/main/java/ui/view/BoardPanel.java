@@ -13,6 +13,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * BoardPanel is a JPanel that displays the game board.
+ * It handles user interactions, such as clicking on the board to make moves,
+ * and draws the game state based on the GameModel.
+ */
 public class BoardPanel extends JPanel {
 
     private final GameModel model;
@@ -25,6 +30,12 @@ public class BoardPanel extends JPanel {
 
     private GameEventConsumer consumer = null;
 
+    /**
+     * Constructs a BoardPanel with the specified ConnectFourFrame and GameModel.
+     *
+     * @param view  the ConnectFourFrame that contains this panel
+     * @param model the GameModel that holds the game state
+     */
     public BoardPanel(ConnectFourFrame view, GameModel model) {
         this.model = model;
         this.setPreferredSize(model.getBoardDimensions().getOuterDimension());
@@ -63,6 +74,13 @@ public class BoardPanel extends JPanel {
 
     }
 
+    /**
+     * Draws a message board with the specified message.
+     * The message is centered and wrapped to fit within the panel's width.
+     *
+     * @param g2d     the Graphics2D object used for drawing
+     * @param message the message to display on the board
+     */
     private void drawMessageBoard(Graphics2D g2d, String message) {
         g2d.setColor(Color.LIGHT_GRAY);
         g2d.fillRect(0, 0, getWidth(), getHeight());
@@ -99,6 +117,12 @@ public class BoardPanel extends JPanel {
         }
     }
 
+    /**
+     * Draws the game board based on the current state of the GameModel.
+     * It fills the background and draws the pieces for each player.
+     *
+     * @param g2d the Graphics2D object used for drawing
+     */
     private void drawBoard(Graphics2D g2d) {
         int margin = this.model.getBoardDimensions().getMargin();
         PlayerEnum[][] boardState = this.model.getBoard();
@@ -143,6 +167,13 @@ public class BoardPanel extends JPanel {
         }
     }
 
+    /**
+     * Handles mouse clicks on the board.
+     * It calculates the clicked cell based on the mouse coordinates and sends a move request.
+     *
+     * @param x the x-coordinate of the mouse click
+     * @param y the y-coordinate of the mouse click
+     */
     private void handleBoardClick(int x, int y) {
         if (waitingForGameStart || drawInitialBoardBool) {
             return; // Ignore clicks if waiting for game start or drawing initial board
@@ -163,6 +194,11 @@ public class BoardPanel extends JPanel {
         }
     }
 
+    /**
+     * Clears the specified row in the game board and shifts all rows above it down by one.
+     *
+     * @param row the row number to clear (1-based index)
+     */
     public void clearRow(int row) {
         row = row -1; // Adjust row to match game masters logic (Start from 1 instead of start from 0)
         PlayerEnum[][] board = model.getBoard();
@@ -183,6 +219,12 @@ public class BoardPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Sends a move request to the game master for the specified column.
+     * The column is adjusted to match the game master's logic (starting from 1).
+     *
+     * @param col the column number where the player wants to make a move (0-based index)
+     */
     public void sendMoveRequest(int col) {
         // Adjust column to match game masters logic (Start from 1 instead of start from 0)
         col = col +1;
@@ -196,6 +238,14 @@ public class BoardPanel extends JPanel {
         producer.stop();
     }
 
+    /**
+     * Initializes a new game with the specified game ID, player identity, and new game action.
+     * It also starts the event consumer for the new game.
+     *
+     * @param gameId          the unique identifier for the game
+     * @param playerIdentity  the identity of the player (e.g., PlayerEnum.ONE or PlayerEnum.TWO)
+     * @param newGameAction   the action to be performed when initializing a new game
+     */
     public void initializeNewGame(String gameId, PlayerEnum playerIdentity, NewGameAction newGameAction) {
         if (newGameAction == null) {
             throw new IllegalArgumentException("NewGameAction cannot be null");
@@ -215,6 +265,12 @@ public class BoardPanel extends JPanel {
     }
 
 
+    /**
+     * Starts the event consumer for the specified game ID.
+     * If an existing consumer is running, it stops it before starting a new one.
+     *
+     * @param gameId the unique identifier for the game
+     */
     public void startEventConsumer(String gameId) {
         if (consumer != null) {
             stopEventConsumer();
@@ -223,6 +279,9 @@ public class BoardPanel extends JPanel {
         new Thread(consumer::consumeGameEvent).start();
     }
 
+    /**
+     * Stops the event consumer if it is currently running.
+     */
     public void stopEventConsumer() {
         if (this.consumer != null) {
             this.consumer.stop();
@@ -259,6 +318,13 @@ public class BoardPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Sets a board piece for the specified player in the given column.
+     * This method updates the game model and repaints the board.
+     *
+     * @param player the player who is making the move (either PlayerEnum.ONE or PlayerEnum.TWO)
+     * @param col    the column where the piece should be placed (1-based index)
+     */
     public void setBoardPiece(PlayerEnum player, int col) {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");

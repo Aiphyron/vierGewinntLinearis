@@ -3,8 +3,11 @@ package models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Model representing a client with a name.
+ */
 public class ClientModel {
-    private String name;
+    private final String name;
 
     @JsonCreator
     public ClientModel(@JsonProperty("name") String name) {
@@ -14,9 +17,5 @@ public class ClientModel {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

@@ -10,7 +10,11 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;
-
+/**
+ * GameRequestProducer is responsible for sending game requests to the Kafka topic.
+ * It serializes the request models to JSON and sends them to the game-requests topic.
+ * Also handles Game synchronization requests to the sync-games-3xMa1xAm topic.
+ */
 public class GameRequestProducer {
     private static final String BOOTSTRAP_SERVERS = "10.50.15.52:9092";
     private static final String GAME_REQUEST_TOPIC = "game-requests";
@@ -19,7 +23,10 @@ public class GameRequestProducer {
 
     private final KafkaProducer<String, String> producer = createProducer();
 
-
+    /**
+     *  Creates a KafkaProducer with the necessary configurations.
+     *  @return A configured KafkaProducer instance.
+     */
     private KafkaProducer<String, String> createProducer() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
@@ -31,7 +38,7 @@ public class GameRequestProducer {
 
     /**
      * Sends a request to the Kafka topic.
-     * IMPORTANT: If the application is closed immediately after calling this method, the request will not be sent.
+     * IMPORTANT: If the application is closed immediately after calling this method, the request will not be sent, 'cause delay
      * @param request The request to send.
      */
     public void sendGameRequest(GameRequestModel request) {
@@ -55,6 +62,10 @@ public class GameRequestProducer {
                 });
     }
 
+    /**
+     * Sends a synchronization game request to the Kafka topic.
+     * @param request The synchronization game request to send.
+     */
     public void sendSyncGameRequest(SyncGameRequestModel request) {
         ObjectMapper mapper = new ObjectMapper();
         String mappedRequest = null;
@@ -76,6 +87,9 @@ public class GameRequestProducer {
                 });
     }
 
+    /**
+     * Closes the producer.
+     */
     public void stop() {
         producer.close();
         System.out.println("Producer closed successfully.");
