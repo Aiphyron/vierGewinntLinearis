@@ -1,5 +1,8 @@
 # Aufgabe 3b
 Dieses Projekt umfasst die Implementierung von Connect Four: Linetris über Kafka mit einer Swing GUI.
+Die SpielID wird über ein eigenes Kafka-Topic übertragen, um die Spielteilnehmer zu synchronisieren. Wenn ein Spieler ein Spiel sucht, wird ein SEARCH_GAME event ausgelöst
+und der Spieler wartet auf ein PLAYER-JOINED Event mit der selben SpielID. Will ein anderer Spieler beitreten, wird nach der ältesten SpielID gesucht, die noch kein passendes PLAYER_JOINED Event
+hat. Mit dieser SpielID wird dann ein PLAYER_JOINED Event ausgelöst.
 Wichtige Klassen sind:
   - Die Kafka Consumer: GameEventConsumer und GameSyncConsumer, die Events von Kafka lesen/konsumieren
   - Der (Linetris)GameEventListener: Jedes (vorgefilterte) Event, das von einem Consumer gelesen wird, wird von einem Listener verarbeitet
